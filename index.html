@@ -1,0 +1,88 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>GitHub Repo Compare Tool</title>
+  <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="table-title">
+    <input type="text" class="repos" value="github/gitignore" />
+    <h3>vs</h3>
+    <input type="text" class="repos" placeholder="username/reponame" />
+  </div>
+  <div class="buttons">
+    <a id="add" href="#">ADD ONE MORE REPO</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a id="compare" href="#">COMPARE THEM</a>
+  </div>
+  <table class="table-fill">
+    <thead>
+      <tr>
+        <th class="text-left">Name</th>
+        <th class="text-left">Stars</th>
+        <th class="text-left">Forks</th>
+        <th class="text-left">Issues & PRs</th>
+        <th class="text-left">Watchers</th>
+        <th class="text-left">Created At<br /></th>
+        <th class="text-left">Last Update</th>
+      </tr>
+    </thead>
+    <tbody class="table-hover">
+
+    </tbody>
+    <tfoot>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th>github.com/erayalakese/github-repo-compare-tool</th>
+    </tfoot>
+  </table>
+
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+  <script type="text/javascript">
+  	$(document).ready(function() {
+		  var vsCount = 2;
+		  $("a#add").click(function() {
+		    if(vsCount < 5) {
+		    $(".table-title").append('<h3>vs</h3><input type="text" class="repos" />');
+		      vsCount++;
+		    }
+		    else {
+		      alert("Max. 5 repos!");
+		    }
+		  });
+
+		  $("#compare").click(function() {
+		    var repos = $(".repos");
+		    repos.each(function(i, repo) {
+		    	var input_val = $(repo).val();
+		    	if(input_val != "") {
+			      fetchData(input_val);
+			    }
+		    });
+		  });
+		});
+
+		function fetchData(repo) {
+		  $.ajax({
+		    url: "https://api.github.com/repos/"+repo,
+		    method: "get",
+		    data: "json",
+		    success: function(data) {
+		      var timeFormat = "YYYY-MM-DDTHH:mm:ssZ";
+		      $("tbody").append('<tr><td class="text-left">'+data.full_name+'</td><td class="text-left">'+data.stargazers_count+'</td><td class="text-left">'+data.forks_count+'</td><td class="text-left">'+data.open_issues_count+'</td><td class="text-left">'+data.watchers_count+'</td><td class="text-left">'+moment(data.created_at, timeFormat).format("DD-MM-YYYY HH:mm:ss")+'</td><td class="text-left">'+moment(data.updated_at, timeFormat).format("DD-MM-YYYY HH:mm:ss")+'</td></tr>');
+		    },
+		    error: function() {
+		      alert("Repo not found");
+		    }
+		  });
+		}
+  </script>
+</body>
+</html>
